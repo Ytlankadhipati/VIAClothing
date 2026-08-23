@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   MessageCircle,
   Ruler,
-  ShieldCheck,
-  Truck,
-  RefreshCw,
   ChevronRight,
-  Sparkles,
   Share2,
-  Check,
 } from "lucide-react";
 import { PRODUCTS } from "../data/products";
 import { getProductOrderWhatsAppUrl } from "../utils/whatsapp";
 import SizeGuideModal from "../components/SizeGuideModal";
-import ProductCard from "../components/ProductCard";
+import ProductGrid from "../components/ProductGrid";
 import { useToast } from "../context/ToastContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { addToast } = useToast();
 
   const product = PRODUCTS.find((p) => p.id === id);
