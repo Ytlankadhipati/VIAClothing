@@ -1,0 +1,7 @@
+# Docker ignore — don't copy these into the container
+node_modules
+npm-debug.log
+.env
+.env.local
+.DS_Store
+*.log
