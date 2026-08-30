@@ -111,24 +111,7 @@ export default function Checkout() {
     try {
       setProcessing(true);
 
-      // 1. CASH ON DELIVERY FLOW
-      if (paymentMethod === "cod") {
-        const verifyRes = await paymentService.verifyPayment({
-          items,
-          shippingAddress,
-          couponCode: coupon?.code,
-          paymentMethod: "cod",
-        });
-
-        if (verifyRes.success && verifyRes.data.order) {
-          clearCart();
-          addToast("Order placed successfully with Cash on Delivery!", "success");
-          navigate(`/order-success/${verifyRes.data.order._id}`);
-          return;
-        }
-      }
-
-      // 2. RAZORPAY PAYMENT FLOW
+      // RAZORPAY / PREPAID PAYMENT FLOW
       const isSdkLoaded = await loadRazorpayScript();
       if (!isSdkLoaded && !window.Razorpay) {
         console.warn("Razorpay SDK could not load. Running in development verification mode.");
@@ -456,59 +439,32 @@ export default function Checkout() {
               </div>
 
               <div className="space-y-3">
-                <label
-                  className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${paymentMethod === "razorpay"
-                      ? "border-black bg-zinc-50 ring-1 ring-black"
-                      : "border-zinc-300 hover:border-zinc-400"
-                    }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === "razorpay"}
-                      onChange={() => setPaymentMethod("razorpay")}
-                      className="accent-black"
-                    />
-                    <div>
-                      <p className="font-bold text-xs uppercase tracking-wider text-zinc-900">
-                        Razorpay (UPI, Credit/Debit Cards, NetBanking)
-                      </p>
-                      <p className="text-[11px] text-zinc-500">
-                        Fast & 100% Encrypted Instant Online Payment
-                      </p>
+                <div className="p-4 border-2 border-black bg-zinc-50 shadow-sm">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full border-2 border-black flex items-center justify-center bg-black">
+                        <div className="w-2 h-2 rounded-full bg-white" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-xs uppercase tracking-wider text-zinc-900 flex items-center gap-2">
+                          <span>Razorpay / Online Payment</span>
+                          <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 uppercase tracking-normal">
+                            100% Encrypted
+                          </span>
+                        </p>
+                        <p className="text-[11px] text-zinc-600 mt-0.5">
+                          UPI (Google Pay, PhonePe, Paytm), Credit / Debit Cards & NetBanking
+                        </p>
+                      </div>
                     </div>
+                    <CreditCard className="w-5 h-5 text-zinc-800 shrink-0" />
                   </div>
-                  <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 uppercase">
-                    Recommended
-                  </span>
-                </label>
 
-                <label
-                  className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${paymentMethod === "cod"
-                      ? "border-black bg-zinc-50 ring-1 ring-black"
-                      : "border-zinc-300 hover:border-zinc-400"
-                    }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === "cod"}
-                      onChange={() => setPaymentMethod("cod")}
-                      className="accent-black"
-                    />
-                    <div>
-                      <p className="font-bold text-xs uppercase tracking-wider text-zinc-900">
-                        Cash on Delivery (COD)
-                      </p>
-                      <p className="text-[11px] text-zinc-500">
-                        Pay cash or UPI directly to courier upon delivery
-                      </p>
-                    </div>
+                  <div className="mt-3 pt-3 border-t border-zinc-200 flex items-center gap-2 text-[10px] uppercase font-bold tracking-wider text-zinc-500">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Instant Order Confirmation & Priority Express Dispatch</span>
                   </div>
-                  <Truck className="w-5 h-5 text-zinc-500" />
-                </label>
+                </div>
               </div>
             </div>
           </div>
@@ -776,13 +732,10 @@ export default function Checkout() {
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   <button
                     type="button"
-                    onClick={() => {
-                      setSandboxModalOpen(false);
-                      setPaymentMethod("cod");
-                    }}
+                    onClick={() => setSandboxModalOpen(false)}
                     className="py-2.5 px-3 border border-zinc-300 hover:border-black text-[10px] font-bold uppercase tracking-wider text-zinc-800 text-center transition-colors"
                   >
-                    Switch to COD
+                    Cancel
                   </button>
 
                   <a

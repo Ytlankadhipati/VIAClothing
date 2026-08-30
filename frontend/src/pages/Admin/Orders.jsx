@@ -208,7 +208,7 @@ export default function AdminOrders() {
                             : "bg-amber-950 text-amber-400 border-amber-800"
                         }`}
                       >
-                        {o.paymentStatus} ({o.paymentMethod || "cod"})
+                        {o.paymentStatus} ({o.paymentMethod || "online"})
                       </span>
                     </td>
                     <td className="p-4 whitespace-nowrap">
@@ -468,7 +468,7 @@ export default function AdminOrders() {
                     <p className="text-zinc-400">
                       Method:{" "}
                       <strong className="text-white uppercase font-bold">
-                        {selectedOrder.paymentMethod === "cod" ? "Cash on Delivery (COD)" : "Online / Razorpay"}
+                        {selectedOrder.paymentMethod === "whatsapp" ? "WhatsApp Order (Prepaid)" : "Online / Razorpay"}
                       </strong>
                     </p>
                     <p className="text-zinc-400">

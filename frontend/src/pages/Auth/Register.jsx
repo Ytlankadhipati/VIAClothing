@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { ArrowRight, Lock, Mail, User, Phone } from "lucide-react";
@@ -12,9 +12,8 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const { register } = useAuth();
-  const { addToast } = useToast();
-  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +31,7 @@ export default function Register() {
       setSubmitting(true);
       await register({ name, email, phone, password });
       addToast("Account created successfully. Welcome to VIA!", "success");
-      navigate("/account");
+      navigate(from, { replace: true });
     } catch (err) {
       addToast(err.message || "Registration failed", "error");
     } finally {

@@ -393,7 +393,7 @@ export default function ProductDetails() {
                 </div>
                 <div className="flex flex-col items-center gap-1.5 p-2 bg-zinc-50 border border-zinc-100">
                   <ShieldCheck className="w-4 h-4 text-zinc-900" />
-                  <span>Cash on Delivery</span>
+                  <span>100% Secure Payments</span>
                 </div>
               </div>
             </div>

@@ -14,7 +14,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/account";
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +27,7 @@ export default function Login() {
       setSubmitting(true);
       const loggedUser = await login(email, password);
       addToast("Welcome back to VIA", "success");
-      if (loggedUser?.role === "admin" && (!location.state?.from || from === "/account")) {
+      if (loggedUser?.role === "admin" && (!location.state?.from || from === "/")) {
         navigate("/admin", { replace: true });
       } else {
         navigate(from, { replace: true });
