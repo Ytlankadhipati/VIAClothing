@@ -40,6 +40,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://via-clothing.vercel.app",
+  "https://main.d3nidkqcrf8n6y.amplifyapp.com",
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
