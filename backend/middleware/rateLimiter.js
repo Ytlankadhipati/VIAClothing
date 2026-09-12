@@ -13,7 +13,7 @@ export const authLimiter = rateLimit({
 
 export const apiLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 50000, // Limit each IP to 600 requests per 10 minutes
+  max: 600, // Limit each IP to 600 requests per 10 minutes
   message: {
     success: false,
     message: "Too many requests from this IP, please try again later.",
