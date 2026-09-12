@@ -2,6 +2,16 @@ import Product from "../models/Product.js";
 import { successResponse, errorResponse } from "../utils/apiResponse.js";
 
 /**
+ * Escape special regex characters in a string to prevent ReDoS attacks.
+ * Prevents inputs like `(a+)+$` from causing catastrophic backtracking.
+ * @param {string} str
+ * @returns {string}
+ */
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * @desc    Get all products with server-side filtering, sorting & pagination
  * @route   GET /api/products
  * @access  Public
@@ -25,15 +35,16 @@ export const getProducts = async (req, res, next) => {
 
     const query = { active: true };
 
-    // Text search or regex match
+    // Text search: escape user input before building regex to prevent ReDoS
     if (search) {
+      const safeSearch = escapeRegex(String(search));
       query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { category: { $regex: search, $options: "i" } },
-        { collection: { $regex: search, $options: "i" } },
-        { tags: { $in: [new RegExp(search, "i")] } },
-        { sku: { $regex: search, $options: "i" } },
+        { name: { $regex: safeSearch, $options: "i" } },
+        { description: { $regex: safeSearch, $options: "i" } },
+        { category: { $regex: safeSearch, $options: "i" } },
+        { collection: { $regex: safeSearch, $options: "i" } },
+        { tags: { $in: [new RegExp(safeSearch, "i")] } },
+        { sku: { $regex: safeSearch, $options: "i" } },
       ];
     }
 
@@ -72,9 +83,9 @@ export const getProducts = async (req, res, next) => {
     else if (sort === "bestseller") sortOptions = { bestseller: -1, createdAt: -1 };
     else if (sort === "featured") sortOptions = { featured: -1, createdAt: -1 };
 
-    // Pagination
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
+    // Pagination — cap limit at 100 to prevent DoS via ?limit=999999
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = Math.min(parseInt(limit, 10) || 20, 100);
     const skip = (pageNum - 1) * limitNum;
 
     const total = await Product.countDocuments(query);

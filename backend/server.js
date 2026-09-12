@@ -8,6 +8,19 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 dotenv.config(); // fallback
 
+// ─── Startup Security Guard ────────────────────────────────────────────────
+// Refuse to start if JWT_SECRET is missing or insecurely short.
+// A weak/missing secret allows anyone to forge valid auth tokens (including admin).
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret || jwtSecret.length < 32) {
+  console.error("\n[VIA Server] \u274c  FATAL: JWT_SECRET is not set or is too short (minimum 32 characters).");
+  console.error("[VIA Server]    Set a strong JWT_SECRET in your .env file before starting the server.");
+  console.error("[VIA Server]    Generate one with:  node -e \"console.log(require('crypto').randomBytes(48).toString('hex'))\"");
+  console.error("[VIA Server]    Server will not start without a valid JWT_SECRET.\n");
+  process.exit(1);
+}
+// ──────────────────────────────────────────────────────────────────────────
+
 import app from "./app.js";
 import { connectDB } from "./config/db.js";
 import { autoSeedIfEmpty } from "./utils/seedData.js";

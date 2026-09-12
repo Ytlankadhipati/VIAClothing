@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import crypto from "crypto";
 dotenv.config();
 
 import User from "../models/User.js";
@@ -823,10 +824,30 @@ export const seedDatabase = async () => {
     await Order.deleteMany();
 
     console.log("[Seeder] Creating Admin & Customer accounts...");
+
+    // Admin password: use SEED_ADMIN_PASSWORD env var, or auto-generate a secure random password.
+    // The generated password is printed ONCE to console — save it immediately.
+    // NEVER commit a real password to source control.
+    const adminPassword =
+      process.env.SEED_ADMIN_PASSWORD ||
+      crypto.randomBytes(15).toString("base64url"); // ~20 URL-safe chars
+
+    if (!process.env.SEED_ADMIN_PASSWORD) {
+      console.log("[Seeder] ⚠️  SEED_ADMIN_PASSWORD not set — generated a random admin password.");
+      console.log("[Seeder] ┌─────────────────────────────────────────────┐");
+      console.log(`[Seeder] │  Admin password (save this now!): ${adminPassword.padEnd(14)}  │`);
+      console.log("[Seeder] └─────────────────────────────────────────────┘");
+      console.log("[Seeder] Set SEED_ADMIN_PASSWORD in your .env to use a fixed password on re-seed.");
+    }
+
+    // Customer demo password: use SEED_CUSTOMER_PASSWORD env var or a fixed demo value.
+    // This is a non-privileged demo account only — still read from env if provided.
+    const customerPassword = process.env.SEED_CUSTOMER_PASSWORD || "Customer@Demo2026";
+
     const adminUser = await User.create({
       name: "Vivek Awasthi",
       email: "admin@viaclothing.in",
-      password: "Admin@VIA2026",
+      password: adminPassword,
       phone: "917007470175",
       role: "admin",
       addresses: [
@@ -847,7 +868,7 @@ export const seedDatabase = async () => {
     const customerUser = await User.create({
       name: "Aryan Sharma",
       email: "customer@viaclothing.in",
-      password: "Customer@VIA2026",
+      password: customerPassword,
       phone: "919876543210",
       role: "customer",
       addresses: [
@@ -926,10 +947,9 @@ export const seedDatabase = async () => {
     });
 
     console.log("[Seeder] Database successfully seeded with VIA data!");
-    console.log("--------------------------------------------------");
-    console.log("Admin Login:    admin@viaclothing.in  /  Admin@VIA2026");
-    console.log("Customer Login: customer@viaclothing.in / Customer@VIA2026");
-    console.log("--------------------------------------------------");
+    console.log("[Seeder] Admin email: admin@viaclothing.in");
+    console.log("[Seeder] Customer email: customer@viaclothing.in");
+    console.log("[Seeder] (Passwords are from env vars or printed above if auto-generated)");
   } catch (err) {
     console.error("[Seeder] Error seeding database:", err);
   }

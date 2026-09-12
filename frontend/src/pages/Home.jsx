@@ -87,7 +87,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 1. HERO SECTION WITH INTERACTIVE 3D WEBGL ENGINE */}
-      <section className="relative min-h-[92vh] lg:min-h-[96vh] flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative min-h-[85vh] sm:min-h-[92vh] lg:min-h-[96vh] flex items-center justify-center overflow-hidden bg-black">
         {/* Background Image with Dark Vignette & Gradient Overlays */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <img
@@ -98,39 +98,41 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/40 to-black/70" />
         </div>
 
-        {/* Interactive 3D Canvas Layer */}
-        <div className="absolute inset-0 z-5 flex items-center justify-center opacity-85">
+        {/* Interactive 3D Canvas Layer — dimmer on mobile so it reads as
+            background texture instead of competing with the headline */}
+        <div className="absolute inset-0 z-5 flex items-center justify-center opacity-50 sm:opacity-85">
           <Hero3DCanvas />
         </div>
 
         {/* Hero Content Overlay */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center pt-8 pb-12 pointer-events-none">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center pt-6 sm:pt-8 pb-8 sm:pb-12 pointer-events-none">
           {/* Official Logo Brand Mark */}
-          <div className="mb-4 flex flex-col items-center animate-fadeIn pointer-events-auto">
+          <div className="mb-3 sm:mb-4 flex flex-col items-center animate-fadeIn pointer-events-auto">
             <img
               src="/assets/via-logo.png"
               alt="VIA Brand Emblem"
-              className="h-20 sm:h-28 md:h-36 w-auto object-contain filter brightness-125 drop-shadow-[0_0_35px_rgba(255,255,255,0.3)] hover:scale-105 transition-transform duration-500"
+              className="h-16 sm:h-28 md:h-36 w-auto object-contain filter brightness-125 drop-shadow-[0_0_35px_rgba(255,255,255,0.3)] hover:scale-105 transition-transform duration-500"
             />
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/20 backdrop-blur-md mb-6 pointer-events-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/20 backdrop-blur-md mb-4 sm:mb-6 pointer-events-auto">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-200">
-              AUTUMN / WINTER 2026 CAPSULE • INTERACTIVE 3D
+              <span className="sm:hidden">AW26 CAPSULE</span>
+              <span className="hidden sm:inline">AUTUMN / WINTER 2026 CAPSULE • INTERACTIVE 3D</span>
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white mb-6 leading-none pointer-events-auto">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white mb-4 sm:mb-6 leading-none pointer-events-auto">
             DEFINE YOUR OWN
           </h1>
 
-          <p className="max-w-xl text-xs sm:text-sm md:text-base text-zinc-300 tracking-widest uppercase font-medium mb-8 leading-relaxed pointer-events-auto">
+          <p className="max-w-xl text-xs sm:text-sm md:text-base text-zinc-300 tracking-widest uppercase font-medium mb-6 sm:mb-8 leading-relaxed pointer-events-auto">
             Vibe • Identity • Authenticity. Heavyweight 240+ GSM silhouettes engineered for those who move beyond conventions.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md justify-center pointer-events-auto mb-6">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full max-w-md justify-center pointer-events-auto mb-4 sm:mb-6">
             <Link
               to="/shop"
               className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-zinc-200 text-black font-black text-xs uppercase tracking-[0.25em] transition-all transform hover:-translate-y-0.5 shadow-2xl flex items-center justify-center gap-2 text-center"
@@ -147,15 +149,19 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* 3D Floating Interactive Badge */}
-          <div className="pointer-events-auto">
+          {/* 3D Floating Interactive Badge — hidden on small phones to keep
+              the hero from feeling crowded; the GSM/fabric detail is also
+              covered on the product pages. */}
+          <div className="hidden sm:block pointer-events-auto">
             <Rotating3DBadge />
           </div>
         </div>
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10 text-zinc-500 pointer-events-none">
-          <span className="text-[9px] uppercase tracking-[0.3em]">Drag to rotate 3D • Scroll</span>
+          <span className="text-[9px] uppercase tracking-[0.3em]">
+            <span className="hidden sm:inline">Drag to rotate 3D • </span>Scroll
+          </span>
           <div className="w-[1px] h-8 bg-gradient-to-b from-white/60 to-transparent"></div>
         </div>
       </section>

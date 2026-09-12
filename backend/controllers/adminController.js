@@ -6,6 +6,14 @@ import cloudinary from "../config/cloudinary.js";
 import { successResponse, errorResponse } from "../utils/apiResponse.js";
 
 /**
+ * Escape special regex characters to prevent ReDoS attacks.
+ * @param {string} str
+ */
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * @desc    Get Admin Dashboard Analytics
  * @route   GET /api/admin/dashboard
  * @access  Private/Admin
@@ -83,15 +91,17 @@ export const getAllOrders = async (req, res, next) => {
     if (status && status !== "all") query.orderStatus = status;
     if (paymentStatus && paymentStatus !== "all") query.paymentStatus = paymentStatus;
     if (search) {
+      const safeSearch = escapeRegex(String(search));
       query.$or = [
-        { orderNumber: { $regex: search, $options: "i" } },
-        { "shippingAddress.fullName": { $regex: search, $options: "i" } },
-        { "shippingAddress.phone": { $regex: search, $options: "i" } },
+        { orderNumber: { $regex: safeSearch, $options: "i" } },
+        { "shippingAddress.fullName": { $regex: safeSearch, $options: "i" } },
+        { "shippingAddress.phone": { $regex: safeSearch, $options: "i" } },
       ];
     }
 
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
+    const pageNum = parseInt(page, 10) || 1;
+    // Cap limit at 200 for admin — prevents DoS via ?limit=999999
+    const limitNum = Math.min(parseInt(limit, 10) || 50, 200);
     const skip = (pageNum - 1) * limitNum;
 
     const total = await Order.countDocuments(query);

@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 
 export const generateToken = (id, role) => {
-  const secret = process.env.JWT_SECRET || "via_secret_jwt_key_streetwear_2026_identity_token_secure";
+  // JWT_SECRET is validated at server startup — if we reach here, it is set.
   const expiresIn = process.env.JWT_EXPIRES_IN || "7d";
-  return jwt.sign({ id, role }, secret, { expiresIn });
+  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn });
 };
 
 export const sendTokenResponse = (user, statusCode, res, message = "Authenticated successfully") => {

@@ -8,6 +8,12 @@ export default function Hero3DCanvas() {
     const container = mountRef.current;
     if (!container) return;
 
+    // Detect low-power / mobile devices so we can render a much lighter scene.
+    // This is the main fix for the "too heavy / laggy / cluttered" feel on phones.
+    const isMobile =
+      window.innerWidth < 768 ||
+      /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     // 1. Scene setup
     const scene = new THREE.Scene();
 
@@ -20,15 +26,20 @@ export default function Hero3DCanvas() {
     );
     camera.position.z = 7;
 
-    // 3. Renderer with antialiasing and transparency
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    // 3. Renderer — disable antialiasing and cap pixel ratio on mobile,
+    // this alone removes most of the GPU/battery load on phones.
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: !isMobile,
+      powerPreference: isMobile ? "low-power" : "high-performance",
+    });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
     container.appendChild(renderer.domElement);
 
-    // 4. Lighting for luxury metallic aesthetic
+    // 4. Lighting — fewer lights on mobile (each light = extra shader cost)
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
 
@@ -36,34 +47,44 @@ export default function Hero3DCanvas() {
     dirLight1.position.set(5, 10, 7);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x10b981, 1.5); // Emerald hint
-    dirLight2.position.set(-5, -5, 3);
-    scene.add(dirLight2);
+    if (!isMobile) {
+      const dirLight2 = new THREE.DirectionalLight(0x10b981, 1.5); // Emerald hint
+      dirLight2.position.set(-5, -5, 3);
+      scene.add(dirLight2);
 
-    const pointLight = new THREE.PointLight(0xffffff, 3, 20);
-    pointLight.position.set(0, 0, 4);
-    scene.add(pointLight);
+      const pointLight = new THREE.PointLight(0xffffff, 3, 20);
+      pointLight.position.set(0, 0, 4);
+      scene.add(pointLight);
+    }
 
     // 5. Main 3D Object: Luxury Streetwear Geometric Monolith
     const group = new THREE.Group();
     scene.add(group);
 
-    // Core Icosahedron Geometry with chrome/metallic luxury shader
-    const mainGeometry = new THREE.IcosahedronGeometry(1.6, 1);
-    const mainMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x18181b,
-      metalness: 0.85,
-      roughness: 0.15,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.1,
-      reflectivity: 0.9,
-      wireframe: false,
-    });
+    // Core Icosahedron Geometry with chrome/metallic luxury shader.
+    // MeshPhysicalMaterial's clearcoat pass is expensive — use the cheaper
+    // MeshStandardMaterial on mobile, it looks almost identical here.
+    const mainGeometry = new THREE.IcosahedronGeometry(1.6, isMobile ? 0 : 1);
+    const mainMaterial = isMobile
+      ? new THREE.MeshStandardMaterial({
+          color: 0x18181b,
+          metalness: 0.85,
+          roughness: 0.2,
+        })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x18181b,
+          metalness: 0.85,
+          roughness: 0.15,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.1,
+          reflectivity: 0.9,
+          wireframe: false,
+        });
     const mainMesh = new THREE.Mesh(mainGeometry, mainMaterial);
     group.add(mainMesh);
 
     // Wireframe Outer Cage
-    const wireGeo = new THREE.IcosahedronGeometry(1.75, 1);
+    const wireGeo = new THREE.IcosahedronGeometry(1.75, isMobile ? 0 : 1);
     const wireMat = new THREE.MeshBasicMaterial({
       color: 0x09090b,
       wireframe: true,
@@ -73,8 +94,10 @@ export default function Hero3DCanvas() {
     const wireMesh = new THREE.Mesh(wireGeo, wireMat);
     group.add(wireMesh);
 
-    // Outer Orbiting Luxury Torus Rings
-    const ringGeo1 = new THREE.TorusGeometry(2.3, 0.025, 16, 100);
+    // Outer Orbiting Luxury Torus Rings (fewer segments on mobile)
+    const ringSegments = isMobile ? 8 : 16;
+    const ringTubularSegments = isMobile ? 40 : 100;
+    const ringGeo1 = new THREE.TorusGeometry(2.3, 0.025, ringSegments, ringTubularSegments);
     const ringMat1 = new THREE.MeshStandardMaterial({
       color: 0x18181b,
       metalness: 0.9,
@@ -84,7 +107,7 @@ export default function Hero3DCanvas() {
     ring1.rotation.x = Math.PI / 3;
     group.add(ring1);
 
-    const ringGeo2 = new THREE.TorusGeometry(2.6, 0.015, 16, 100);
+    const ringGeo2 = new THREE.TorusGeometry(2.6, 0.015, ringSegments, ringTubularSegments);
     const ringMat2 = new THREE.MeshStandardMaterial({
       color: 0x10b981,
       metalness: 0.8,
@@ -97,8 +120,8 @@ export default function Hero3DCanvas() {
     ring2.rotation.x = -Math.PI / 6;
     group.add(ring2);
 
-    // Floating micro-particles / dust
-    const particleCount = 80;
+    // Floating micro-particles / dust — far fewer on mobile
+    const particleCount = isMobile ? 20 : 80;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
 
@@ -166,9 +189,14 @@ export default function Hero3DCanvas() {
       }
     };
 
-    window.addEventListener("mousemove", onMouseMove);
-    container.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mouseup", onMouseUp);
+    // On mobile, skip the mouse/drag listeners entirely — touch users get a
+    // gentle tilt-follow only (see onTouchMove), not a free-drag rotation,
+    // so it doesn't fight with page scrolling or feel fiddly on a small screen.
+    if (!isMobile) {
+      window.addEventListener("mousemove", onMouseMove);
+      container.addEventListener("mousedown", onMouseDown);
+      window.addEventListener("mouseup", onMouseUp);
+    }
     container.addEventListener("touchmove", onTouchMove, { passive: true });
 
     // 7. Handle Window Resize

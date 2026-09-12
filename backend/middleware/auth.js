@@ -25,8 +25,8 @@ export const protect = async (req, res, next) => {
   }
 
   try {
-    const secret = process.env.JWT_SECRET || "via_secret_jwt_key_streetwear_2026_identity_token_secure";
-    const decoded = jwt.verify(token, secret);
+    // JWT_SECRET is validated at server startup — no fallback, fail hard if missing.
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded.id).select("-password");
     if (!user) {
@@ -67,11 +67,11 @@ export const optionalAuth = async (req, res, next) => {
 
   if (token) {
     try {
-      const secret = process.env.JWT_SECRET || "via_secret_jwt_key_streetwear_2026_identity_token_secure";
-      const decoded = jwt.verify(token, secret);
+      // JWT_SECRET is validated at server startup — no fallback, fail hard if missing.
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(decoded.id).select("-password");
     } catch (err) {
-      // Ignore token errors for optional auth
+      // Ignore token errors for optional auth — guest access continues
     }
   }
   next();
