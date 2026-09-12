@@ -9,20 +9,26 @@
 
 ### 1. Install Dependencies
 ```bash
-# Install root & frontend dependencies
-npm install
+# Install frontend dependencies
+cd frontend && npm install && cd ..
 
 # Install backend dependencies
-cd server && npm install && cd ..
+cd backend && npm install && cd ..
 ```
 
 ### 2. Seed Database with Streetwear Catalog & Accounts
 ```bash
+cd backend
+# Optional: Set SEED_ADMIN_PASSWORD in your environment before running
 npm run seed
 ```
 
 ### 3. Start Full Stack Application
 ```bash
+# In backend/
+npm run dev
+
+# In frontend/
 npm run dev
 ```
 - **Frontend:** [http://localhost:5173](http://localhost:5173)
@@ -30,37 +36,28 @@ npm run dev
 
 ---
 
-## 🔑 Default Credentials
-
-| Role | Email | Password | Access |
-|---|---|---|---|
-| **Admin** | `admin@viaclothing.in` | `Admin@VIA2026` | Full Storefront + Admin Dashboard (`/admin`) |
-| **Customer** | `customer@viaclothing.in` | `Customer@VIA2026` | Storefront, Bag, Orders & Profile (`/account`) |
-
----
-
 ## 🏗️ Architecture
 
 ```
 VIA/
-├── src/                        # Vite + React Frontend
-│   ├── components/             # Navbar, CartDrawer, ProductCard, Modals, AdminLayout
-│   ├── pages/                  # Shop, ProductDetails, Checkout, OrderSuccess, Account, Admin, Auth
-│   ├── context/                # AuthContext, CartContext, WishlistContext, ToastContext
-│   ├── services/               # Axios API clients (auth, products, cart, orders, payments, admin)
-│   ├── utils/                  # WhatsApp link generators, helpers
-│   └── App.jsx                 # Routing and global provider setup
+├── frontend/                   # Vite + React Frontend
+│   ├── src/
+│   │   ├── components/         # Navbar, CartDrawer, ProductCard, Modals, AdminLayout
+│   │   ├── pages/              # Shop, ProductDetails, Checkout, OrderSuccess, Account, Admin, Auth
+│   │   ├── context/            # AuthContext, CartContext, WishlistContext, ToastContext
+│   │   ├── services/           # Axios API clients (auth, products, cart, orders, payments, admin)
+│   │   ├── utils/              # WhatsApp link generators, helpers
+│   │   └── App.jsx             # Routing and global provider setup
 │
-├── server/                     # Node.js + Express REST API
-│   ├── config/                 # db.js (with in-memory fallback), razorpay.js, cloudinary.js
+├── backend/                    # Node.js + Express REST API
+│   ├── config/                 # db.js, razorpay.js, cloudinary.js
 │   ├── controllers/            # auth, product, cart, order, payment, review, coupon, admin
-│   ├── middleware/             # auth.js (JWT & RBAC), error.js, rateLimiter.js, upload.js
+│   ├── middleware/             # auth.js, error.js, rateLimiter.js, validate.js
 │   ├── models/                 # User, Product, Category, Collection, Cart, Order, Review, Coupon
 │   ├── routes/                 # authRoutes, productRoutes, cartRoutes, orderRoutes, etc.
 │   ├── services/               # emailService.js, shippingService.js
 │   └── utils/                  # seedData.js, token.js, apiResponse.js
 │
-├── .env.example
 ├── README.md
 └── package.json
 ```
@@ -69,14 +66,15 @@ VIA/
 
 ## ⚙️ Environment Variables
 
-Create `.env` inside `server/` (or refer to `.env.example`):
+Create `.env` inside `backend/`:
 ```env
 PORT=5001
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 MONGO_URI=mongodb://127.0.0.1:27017/via_clothing
-JWT_SECRET=your_jwt_secret_key
+JWT_SECRET=your_super_secret_jwt_key_at_least_32_characters_long
 JWT_EXPIRES_IN=7d
+SEED_ADMIN_PASSWORD=your_secure_admin_password
 RAZORPAY_KEY_ID=rzp_test_placeholder
 RAZORPAY_KEY_SECRET=rzp_secret_placeholder
 CLOUDINARY_CLOUD_NAME=
@@ -89,11 +87,11 @@ EMAIL_FROM=orders@viaclothing.in
 
 ## 📦 Production Build & Deployment
 
-### Frontend (Vercel)
+### Frontend (Vercel / Amplify)
 ```bash
-npm run build
+cd frontend && npm run build
 ```
-Vercel automatically detects the Vite build output (`dist/`). Routing rewrites are handled by `vercel.json` and `public/_redirects`.
 
 ### Backend
-Deploy `server/` to Render, Railway, DigitalOcean, or AWS with standard `npm start`.
+Deploy `backend/` to Render, Railway, DigitalOcean, or AWS with standard `npm start`.
+

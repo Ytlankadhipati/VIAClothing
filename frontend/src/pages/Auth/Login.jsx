@@ -59,34 +59,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Demo Credentials Quick-Fill Banner */}
-        <div className="mb-6 p-3 bg-zinc-50 border border-zinc-200 text-xs">
-          <p className="font-bold text-zinc-800 uppercase tracking-wider text-[10px] mb-1">
-            ⚡ Quick Demo Accounts:
-          </p>
-          <div className="flex flex-col gap-1 text-[11px] text-zinc-600">
-            <button
-              type="button"
-              onClick={() => {
-                setEmail("admin@viaclothing.in");
-                setPassword("Admin@VIA2026");
-              }}
-              className="text-left hover:text-black font-semibold underline"
-            >
-              • Admin: admin@viaclothing.in / Admin@VIA2026
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEmail("customer@viaclothing.in");
-                setPassword("Customer@VIA2026");
-              }}
-              className="text-left hover:text-black font-semibold underline"
-            >
-              • Customer: customer@viaclothing.in / Customer@VIA2026
-            </button>
-          </div>
-        </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
