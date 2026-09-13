@@ -192,6 +192,12 @@ export const createProduct = async (req, res, next) => {
       skuCounter++;
     }
 
+    // Auto-calculate exact discount percentage if MRP is provided and greater than price
+    let calculatedDiscount = discount || "";
+    if (compareAtPrice && Number(compareAtPrice) > Number(price) && Number(price) > 0) {
+      calculatedDiscount = `${Math.round(((Number(compareAtPrice) - Number(price)) / Number(compareAtPrice)) * 100)}% OFF`;
+    }
+
     const product = await Product.create({
       name,
       slug: generatedSlug,
@@ -201,7 +207,7 @@ export const createProduct = async (req, res, next) => {
       collection,
       price,
       compareAtPrice,
-      discount,
+      discount: calculatedDiscount,
       sku: generatedSku,
       images: Array.isArray(images) && images.length ? images : ["/assets/via-logo.png"],
       sizes: sizes || ["S", "M", "L", "XL", "XXL"],
@@ -232,6 +238,17 @@ export const createProduct = async (req, res, next) => {
  */
 export const updateProduct = async (req, res, next) => {
   try {
+    if (req.body.price !== undefined || req.body.compareAtPrice !== undefined) {
+      const current = await Product.findById(req.params.id);
+      if (current) {
+        const pPrice = req.body.price !== undefined ? Number(req.body.price) : current.price;
+        const pCompare = req.body.compareAtPrice !== undefined ? Number(req.body.compareAtPrice) : current.compareAtPrice;
+        if (pCompare && pCompare > pPrice && pPrice > 0) {
+          req.body.discount = `${Math.round(((pCompare - pPrice) / pCompare) * 100)}% OFF`;
+        }
+      }
+    }
+
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,

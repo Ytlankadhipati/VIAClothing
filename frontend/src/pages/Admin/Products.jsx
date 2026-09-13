@@ -420,9 +420,13 @@ export default function AdminProducts() {
                     className="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 text-white outline-hidden focus:border-white"
                   >
                     <option value="Oversized Tees">Oversized Tees</option>
-                    <option value="Hoodies">Hoodies</option>
-                    <option value="Sweatshirts">Sweatshirts</option>
+                    <option value="T-Shirts">T-Shirts</option>
+                    <option value="Hoodies & Sweatshirts">Hoodies & Sweatshirts</option>
                     <option value="Bottoms">Bottoms</option>
+                    <option value="Bottles">Bottles</option>
+                    <option value="Mugs">Mugs</option>
+                    <option value="Caps & Headwear">Caps & Headwear</option>
+                    <option value="Custom Print">Custom Print</option>
                   </select>
                 </div>
                 <div>
@@ -451,18 +455,35 @@ export default function AdminProducts() {
                     type="number"
                     required
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const p = Number(e.target.value);
+                      const c = formData.compareAtPrice;
+                      const disc = c && c > p && p > 0 ? `${Math.round(((c - p) / c) * 100)}% OFF` : "";
+                      setFormData({ ...formData, price: p, discount: disc });
+                    }}
                     className="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 text-white outline-hidden focus:border-white"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold uppercase tracking-wider text-zinc-400 mb-1">
-                    MRP / Compare (₹)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-bold uppercase tracking-wider text-zinc-400">
+                      MRP / Compare (₹)
+                    </label>
+                    {formData.discount && (
+                      <span className="text-[10px] font-black text-emerald-400 bg-emerald-950/80 px-1 py-0.2 border border-emerald-800">
+                        {formData.discount}
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     value={formData.compareAtPrice}
-                    onChange={(e) => setFormData({ ...formData, compareAtPrice: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const c = Number(e.target.value);
+                      const p = formData.price;
+                      const disc = c && c > p && p > 0 ? `${Math.round(((c - p) / c) * 100)}% OFF` : "";
+                      setFormData({ ...formData, compareAtPrice: c, discount: disc });
+                    }}
                     className="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 text-white outline-hidden focus:border-white"
                   />
                 </div>

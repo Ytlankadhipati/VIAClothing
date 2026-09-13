@@ -18,6 +18,11 @@ export default function ProductCard({ product }) {
   const hoverImage = product.images?.[1] || mainImage;
   const wishlisted = isWishlisted(product._id || product.id);
 
+  const discountBadge =
+    product.compareAtPrice && product.compareAtPrice > product.price
+      ? `${Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}% OFF`
+      : product.discount;
+
   const handleMouseMove = (e) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -67,9 +72,9 @@ export default function ProductCard({ product }) {
 
           {/* Badges (Discount / New Drop / GSM) */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none z-10">
-            {product.discount && (
+            {discountBadge && (
               <span className="bg-black text-white text-[9px] font-black uppercase tracking-widest px-2 py-0.5 shadow-sm">
-                {product.discount}
+                {discountBadge}
               </span>
             )}
             {product.newArrival && (

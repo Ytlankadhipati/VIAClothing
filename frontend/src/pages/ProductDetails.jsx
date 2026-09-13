@@ -137,6 +137,11 @@ export default function ProductDetails() {
   const isLowStock = currentStock > 0 && currentStock <= 5;
   const wishlisted = isWishlisted(product._id || product.id);
 
+  const discountBadge =
+    product.compareAtPrice && product.compareAtPrice > currentPrice
+      ? `${Math.round(((product.compareAtPrice - currentPrice) / product.compareAtPrice) * 100)}% OFF`
+      : product.discount;
+
   const handleAddToCart = () => {
     if (!selectedSize) {
       addToast("Please select your size first", "error");
@@ -242,9 +247,9 @@ export default function ProductDetails() {
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
 
-              {product.discount && (
+              {discountBadge && (
                 <span className="absolute top-4 left-4 bg-black text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 shadow-md">
-                  {product.discount}
+                  {discountBadge}
                 </span>
               )}
 
@@ -297,9 +302,9 @@ export default function ProductDetails() {
                       ₹{product.compareAtPrice.toLocaleString("en-IN")}
                     </span>
                   )}
-                  {product.discount && (
+                  {discountBadge && (
                     <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-300">
-                      SAVE {product.discount}
+                      SAVE {discountBadge}
                     </span>
                   )}
                 </div>
