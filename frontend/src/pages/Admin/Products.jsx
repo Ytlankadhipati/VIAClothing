@@ -137,6 +137,56 @@ export default function AdminProducts() {
     });
   };
 
+  const compressImageFile = (file) => {
+    return new Promise((resolve) => {
+      if (!file.type || !file.type.startsWith("image/") || file.type === "image/svg+xml") {
+        return resolve(file);
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 1200;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob && blob.size < file.size) {
+                const compressed = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), {
+                  type: "image/jpeg",
+                  lastModified: Date.now(),
+                });
+                resolve(compressed);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/jpeg",
+            0.82
+          );
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -145,8 +195,9 @@ export default function AdminProducts() {
       setUploadingImage(true);
       const uploadedUrls = [];
       for (const file of files) {
+        const optimizedFile = await compressImageFile(file);
         const data = new FormData();
-        data.append("image", file);
+        data.append("image", optimizedFile);
         const res = await adminService.uploadImage(data);
         if (res.success && res.data.url) {
           uploadedUrls.push(res.data.url);
