@@ -91,6 +91,7 @@ export const getProducts = async (req, res, next) => {
     const total = await Product.countDocuments(query);
     const products = await Product.find(query)
       .sort(sortOptions)
+      .allowDiskUse(true)
       .skip(skip)
       .limit(limitNum);
 

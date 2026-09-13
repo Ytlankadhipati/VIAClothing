@@ -157,6 +157,12 @@ const productSchema = new mongoose.Schema(
   { timestamps: true, suppressReservedKeysWarning: true }
 );
 
+// Indexes for fast sorting and querying without in-memory sort buffer limit
+productSchema.index({ createdAt: -1 });
+productSchema.index({ active: 1, createdAt: -1 });
+productSchema.index({ category: 1, createdAt: -1 });
+productSchema.index({ price: 1 });
+
 // Full text search index
 productSchema.index({
   name: "text",
