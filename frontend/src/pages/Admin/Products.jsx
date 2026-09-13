@@ -20,6 +20,7 @@ export default function AdminProducts() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageUrlInput, setImageUrlInput] = useState("");
 
   const { addToast } = useToast();
 
@@ -34,7 +35,7 @@ export default function AdminProducts() {
     gsm: "240 GSM Super Combed Cotton",
     fit: "Relaxed Boxy Drop-Shoulder Fit",
     description: "",
-    images: [""],
+    images: [],
     sizes: ["S", "M", "L", "XL", "XXL"],
     featured: false,
     bestseller: false,
@@ -62,6 +63,7 @@ export default function AdminProducts() {
 
   const handleOpenCreate = () => {
     setEditingProduct(null);
+    setImageUrlInput("");
     setFormData({
       name: "",
       category: "Oversized Tees",
@@ -73,7 +75,7 @@ export default function AdminProducts() {
       gsm: "240 GSM Super Combed Cotton",
       fit: "Relaxed Boxy Drop-Shoulder Fit",
       description: "Engineered from heavyweight cotton with signature boxy drape.",
-      images: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=85"],
+      images: [],
       sizes: ["S", "M", "L", "XL", "XXL"],
       featured: false,
       bestseller: false,
@@ -85,6 +87,7 @@ export default function AdminProducts() {
 
   const handleOpenEdit = (p) => {
     setEditingProduct(p);
+    setImageUrlInput("");
     setFormData({
       name: p.name,
       category: p.category,
@@ -106,31 +109,70 @@ export default function AdminProducts() {
     setModalOpen(true);
   };
 
+  const handleAddImageUrl = () => {
+    const trimmed = imageUrlInput.trim();
+    if (!trimmed) return;
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images.filter(Boolean), trimmed],
+    }));
+    setImageUrlInput("");
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, idx) => idx !== indexToRemove),
+    }));
+  };
+
+  const handleSetPrimaryImage = (index) => {
+    setFormData((prev) => {
+      const imgs = [...prev.images];
+      const [chosen] = imgs.splice(index, 1);
+      return {
+        ...prev,
+        images: [chosen, ...imgs],
+      };
+    });
+  };
+
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
     try {
       setUploadingImage(true);
-      const data = new FormData();
-      data.append("image", file);
-      const res = await adminService.uploadImage(data);
-      if (res.success && res.data.url) {
+      const uploadedUrls = [];
+      for (const file of files) {
+        const data = new FormData();
+        data.append("image", file);
+        const res = await adminService.uploadImage(data);
+        if (res.success && res.data.url) {
+          uploadedUrls.push(res.data.url);
+        }
+      }
+      if (uploadedUrls.length > 0) {
         setFormData((prev) => ({
           ...prev,
-          images: [res.data.url, ...prev.images.filter(Boolean)],
+          images: [...prev.images.filter(Boolean), ...uploadedUrls],
         }));
-        addToast("Image uploaded successfully", "success");
+        addToast(`${uploadedUrls.length} photo(s) added successfully`, "success");
       }
     } catch (err) {
       addToast(err.message || "Failed to upload image", "error");
     } finally {
       setUploadingImage(false);
+      e.target.value = "";
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.images || formData.images.filter(Boolean).length === 0) {
+      addToast("Please upload or add at least one product photo", "error");
+      return;
+    }
     try {
       if (editingProduct) {
         await adminService.updateProduct(editingProduct._id, formData);
@@ -427,31 +469,109 @@ export default function AdminProducts() {
                 />
               </div>
 
-              {/* Image Upload */}
-              <div>
-                <label className="block font-bold uppercase tracking-wider text-zinc-400 mb-1">
-                  Product Image
-                </label>
-                <div className="flex items-center gap-3">
-                  <label className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white cursor-pointer font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
+              {/* Multiple Images Upload & Gallery */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold uppercase tracking-wider text-zinc-400 text-xs">
+                    Product Photos ({formData.images?.filter(Boolean).length || 0}) *
+                  </label>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">
+                    Add front, back & side angles
+                  </span>
+                </div>
+
+                {/* Upload & URL Input Row */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <label className="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white cursor-pointer font-bold uppercase tracking-wider text-[11px] flex items-center justify-center gap-2 shrink-0 border border-zinc-700 transition-colors">
                     <Upload className="w-3.5 h-3.5" />
-                    {uploadingImage ? "Uploading..." : "Upload from Device"}
+                    {uploadingImage ? "Uploading..." : "Upload Photos (Multiple)"}
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleImageUpload}
                       disabled={uploadingImage}
                       className="hidden"
                     />
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Or enter Image URL"
-                    value={formData.images[0] || ""}
-                    onChange={(e) => setFormData({ ...formData, images: [e.target.value] })}
-                    className="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-800 text-white outline-hidden focus:border-white"
-                  />
+
+                  <div className="flex-1 flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Paste photo URL (https://...)"
+                      value={imageUrlInput}
+                      onChange={(e) => setImageUrlInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddImageUrl();
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 bg-zinc-950 border border-zinc-800 text-white text-xs outline-hidden focus:border-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddImageUrl}
+                      className="px-4 py-2 bg-zinc-800 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-colors border border-zinc-700"
+                    >
+                      + Add
+                    </button>
+                  </div>
                 </div>
+
+                {/* Thumbnails Preview Grid */}
+                {formData.images && formData.images.filter(Boolean).length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2 p-3 bg-zinc-950 border border-zinc-800/80">
+                    {formData.images.filter(Boolean).map((imgUrl, idx) => (
+                      <div
+                        key={idx}
+                        className="group relative aspect-square bg-zinc-900 border border-zinc-700 overflow-hidden shadow-sm"
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`Angle ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+
+                        {/* Angle Label Badge */}
+                        <span
+                          className={`absolute top-1 left-1 text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 shadow-sm ${
+                            idx === 0
+                              ? "bg-amber-400 text-black font-extrabold"
+                              : "bg-black/80 text-zinc-300"
+                          }`}
+                        >
+                          {idx === 0 ? "Main / Front" : idx === 1 ? "Back" : `Angle ${idx + 1}`}
+                        </span>
+
+                        {/* Delete Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(idx)}
+                          className="absolute top-1 right-1 p-1 bg-red-600/90 hover:bg-red-500 text-white rounded-full opacity-90 group-hover:opacity-100 transition-opacity"
+                          title="Remove photo"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+
+                        {/* Make Primary action for non-first items */}
+                        {idx !== 0 && (
+                          <button
+                            type="button"
+                            onClick={() => handleSetPrimaryImage(idx)}
+                            className="absolute bottom-0 inset-x-0 py-1 bg-black/85 hover:bg-black text-[8px] text-amber-300 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity text-center"
+                          >
+                            Set Main
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 border border-dashed border-zinc-800 text-center text-zinc-500 text-xs">
+                    No product photos added yet. Upload files or paste URLs above.
+                  </div>
+                )}
               </div>
 
               {/* Toggles */}

@@ -171,12 +171,25 @@ export const createProduct = async (req, res, next) => {
       stock,
     } = req.body;
 
-    const generatedSlug =
-      slug ||
-      name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+    let baseSlug = (slug || name || "product")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    let generatedSlug = baseSlug || `via-product-${Date.now().toString().slice(-4)}`;
+    let counter = 1;
+    while (await Product.exists({ slug: generatedSlug })) {
+      generatedSlug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
+    let baseSku = (sku || `VIA-${Date.now().toString().slice(-5)}`).toUpperCase();
+    let generatedSku = baseSku;
+    let skuCounter = 1;
+    while (await Product.exists({ sku: generatedSku })) {
+      generatedSku = `${baseSku}-${skuCounter}`;
+      skuCounter++;
+    }
 
     const product = await Product.create({
       name,
@@ -188,7 +201,7 @@ export const createProduct = async (req, res, next) => {
       price,
       compareAtPrice,
       discount,
-      sku: sku || `VIA-${Date.now().toString().slice(-5)}`,
+      sku: generatedSku,
       images: Array.isArray(images) && images.length ? images : ["/assets/via-logo.png"],
       sizes: sizes || ["S", "M", "L", "XL", "XXL"],
       colors: colors || ["Black"],

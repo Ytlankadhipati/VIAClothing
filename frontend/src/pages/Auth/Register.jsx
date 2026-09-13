@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-import { ArrowRight, Lock, Mail, User, Phone } from "lucide-react";
+import { ArrowRight, Lock, Mail, User, Phone, Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -10,6 +10,8 @@ export default function Register() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const location = useLocation();
@@ -117,14 +119,25 @@ export default function Register() {
             </label>
             <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 text-xs border border-zinc-300 focus:border-black outline-hidden bg-white"
+                className="w-full pl-4 pr-10 py-3 text-xs border border-zinc-300 focus:border-black outline-hidden bg-white"
               />
-              <Lock className="w-4 h-4 text-zinc-400 absolute right-3 top-3.5" />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-zinc-400 hover:text-black transition-colors focus:outline-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -134,14 +147,25 @@ export default function Register() {
             </label>
             <div className="relative">
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 text-xs border border-zinc-300 focus:border-black outline-hidden bg-white"
+                className="w-full pl-4 pr-10 py-3 text-xs border border-zinc-300 focus:border-black outline-hidden bg-white"
               />
-              <Lock className="w-4 h-4 text-zinc-400 absolute right-3 top-3.5" />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-3 text-zinc-400 hover:text-black transition-colors focus:outline-none"
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
           </div>
 

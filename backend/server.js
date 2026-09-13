@@ -30,7 +30,7 @@ const PORT = process.env.PORT || 5001;
 const startServer = async () => {
   try {
     await connectDB();
-    await autoSeedIfEmpty();
+    // await autoSeedIfEmpty(); // Auto-seed disabled so custom products are not overwritten
 
     app.listen(PORT, () => {
       console.log(

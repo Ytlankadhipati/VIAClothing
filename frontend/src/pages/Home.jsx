@@ -53,32 +53,32 @@ export default function Home() {
 
   const instagramPosts = [
     {
-      img: "/assets/via-tee-real.jpg",
+      img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
       tag: "#VIA.OVERSIZED",
       desc: "240 GSM Drop-Shoulder Heavy Tee",
     },
     {
-      img: "/assets/via-bottle-real.jpg",
+      img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=800&q=80",
       tag: "#VIA.BOTTLES",
       desc: "360° Laser Engraved Vacuum Flask",
     },
     {
-      img: "/assets/via-mug-real.jpg",
+      img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80",
       tag: "#VIA.MUGS",
       desc: "Kiln-Fired Ceramic Sublimation",
     },
     {
-      img: "/assets/via-cap-real.jpg",
+      img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80",
       tag: "#VIA.HEADWEAR",
       desc: "3D Puff Embroidered Snapbacks",
     },
     {
-      img: "/assets/via-hoodie-real.jpg",
+      img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80",
       tag: "#VIA.HOODIES",
       desc: "400 GSM French Terry Outerwear",
     },
     {
-      img: "/assets/via-bottle-real.jpg",
+      img: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80",
       tag: "#VIA.CUSTOMPRINT",
       desc: "Interactive Live Custom Studio",
     },

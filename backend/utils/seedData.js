@@ -847,6 +847,7 @@ export const seedDatabase = async () => {
     const adminUser = await User.create({
       name: "Vivek Awasthi",
       email: "admin@viaclothing.in",
+
       password: adminPassword,
       phone: "917007470175",
       role: "admin",
@@ -956,12 +957,8 @@ export const seedDatabase = async () => {
 };
 
 export const autoSeedIfEmpty = async () => {
-  const categoryCount = await Category.countDocuments();
-  const productCount = await Product.countDocuments();
-  if (productCount < 10 || categoryCount < 5) {
-    console.log("[Database] Incomplete or empty database detected. Seeding latest catalog...");
-    await seedDatabase();
-  }
+  // Permanently disabled: real catalog data will be uploaded manually by the user
+  return;
 };
 
 // If run directly via `node utils/seedData.js`
