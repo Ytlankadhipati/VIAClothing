@@ -103,12 +103,13 @@ export const getMe = async (req, res, next) => {
  */
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, phone, avatar } = req.body;
+    const { name, phone, avatar, gender } = req.body;
 
     const fieldsToUpdate = {};
     if (name) fieldsToUpdate.name = name;
     if (phone !== undefined) fieldsToUpdate.phone = phone;
     if (avatar) fieldsToUpdate.avatar = avatar;
+    if (gender !== undefined) fieldsToUpdate.gender = gender;
 
     const user = await User.findByIdAndUpdate(req.user._id, fieldsToUpdate, {
       new: true,

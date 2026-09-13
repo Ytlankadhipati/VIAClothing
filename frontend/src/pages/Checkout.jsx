@@ -17,12 +17,14 @@ import {
   X,
   CheckCircle2,
   Lock,
+  Loader2,
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { paymentService } from "../services/paymentService";
 import { getCartOrderWhatsAppUrl } from "../utils/whatsapp";
+import { fetchCityStateFromPincode } from "../utils/pincodeHelper";
 
 // Dynamically load Razorpay SDK
 const loadRazorpayScript = () => {
@@ -56,6 +58,39 @@ export default function Checkout() {
     postalCode: user?.addresses?.[0]?.postalCode || "",
     country: "India",
   });
+
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeStatus, setPincodeStatus] = useState(null);
+
+  const handlePincodeChange = async (val) => {
+    const clean = val.replace(/\D/g, "").slice(0, 6);
+    setShippingAddress((prev) => ({ ...prev, postalCode: clean }));
+
+    if (clean.length === 6) {
+      setPincodeLoading(true);
+      setPincodeStatus(null);
+      const res = await fetchCityStateFromPincode(clean);
+      setPincodeLoading(false);
+      if (res && res.success) {
+        setShippingAddress((prev) => ({
+          ...prev,
+          city: res.city || prev.city,
+          state: res.state || prev.state,
+        }));
+        setPincodeStatus({
+          success: true,
+          message: `${res.city}, ${res.state}`,
+        });
+      } else {
+        setPincodeStatus({
+          success: false,
+          message: "PIN code not verified. Please enter City & State manually.",
+        });
+      }
+    } else {
+      setPincodeStatus(null);
+    }
+  };
 
   const [paymentMethod, setPaymentMethod] = useState("razorpay"); // 'razorpay' | 'cod'
   const [couponCodeInput, setCouponCodeInput] = useState("");
@@ -379,14 +414,49 @@ export default function Checkout() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* PIN Code with Live Postal Verification */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700">
+                      PIN Code (6-Digits) *
+                    </label>
+                    {pincodeLoading && (
+                      <span className="text-[10px] text-zinc-500 font-bold flex items-center gap-1">
+                        <Loader2 className="w-3 h-3 animate-spin text-black" /> Verifying PIN Code...
+                      </span>
+                    )}
+                    {pincodeStatus?.success && (
+                      <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200 font-bold flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> {pincodeStatus.message}
+                      </span>
+                    )}
+                    {pincodeStatus && !pincodeStatus.success && (
+                      <span className="text-[10px] text-amber-700 font-bold">
+                        {pincodeStatus.message}
+                      </span>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    required
+                    value={shippingAddress.postalCode}
+                    onChange={(e) => handlePincodeChange(e.target.value)}
+                    placeholder="e.g. 110001, 208001, 560001"
+                    className="w-full px-3 py-2.5 text-xs font-mono border border-zinc-300 focus:border-black outline-hidden bg-white"
+                  />
+                </div>
+
+                {/* City and State (Auto-filled from PIN Code) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                      City *
+                      City / District *
                     </label>
                     <input
                       type="text"
                       required
+                      placeholder="Auto-filled via PIN"
                       value={shippingAddress.city}
                       onChange={(e) =>
                         setShippingAddress({ ...shippingAddress, city: e.target.value })
@@ -402,26 +472,11 @@ export default function Checkout() {
                     <input
                       type="text"
                       required
+                      placeholder="Auto-filled via PIN"
                       value={shippingAddress.state}
                       onChange={(e) =>
                         setShippingAddress({ ...shippingAddress, state: e.target.value })
                       }
-                      className="w-full px-3 py-2.5 text-xs border border-zinc-300 focus:border-black outline-hidden bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                      PIN Code *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={shippingAddress.postalCode}
-                      onChange={(e) =>
-                        setShippingAddress({ ...shippingAddress, postalCode: e.target.value })
-                      }
-                      placeholder="560038"
                       className="w-full px-3 py-2.5 text-xs border border-zinc-300 focus:border-black outline-hidden bg-white"
                     />
                   </div>

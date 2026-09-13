@@ -91,11 +91,11 @@ export default function Home() {
         {/* Background Image with Dark Vignette & Gradient Overlays */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <img
-            src="https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=2000&q=90"
-            alt="VIA Streetwear Campaign"
-            className="w-full h-full object-cover object-center filter brightness-35 scale-105 transition-transform duration-1000 ease-out"
+            src="/assets/hero-man-streetwear.jpg"
+            alt="VIA Streetwear Campaign - Heavyweight Drop"
+            className="w-full h-full object-cover object-center filter brightness-45 scale-105 transition-transform duration-1000 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/40 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/45 to-black/75" />
         </div>
 
         {/* Interactive 3D Canvas Layer — dimmer on mobile so it reads as
