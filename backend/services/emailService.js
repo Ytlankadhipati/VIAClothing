@@ -2,42 +2,54 @@ import nodemailer from "nodemailer";
 
 class EmailService {
   constructor() {
-    this.fromEmail = process.env.EMAIL_FROM || "orders@viaclothing.in";
     this.transporter = null;
-    this.initTransporter();
   }
 
-  initTransporter() {
-    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+  getTransporter() {
+    if (!this.transporter && process.env.SMTP_HOST && process.env.SMTP_USER) {
+      const cleanPass = (process.env.SMTP_PASS || "").replace(/\s+/g, "");
       this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || "587", 10),
         secure: process.env.SMTP_SECURE === "true",
         auth: {
           user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
+          pass: cleanPass,
         },
       });
     }
+    return this.transporter;
+  }
+
+  getFromAddress() {
+    // When using personal Gmail SMTP, Gmail requires the sender to match the authenticated user
+    if (process.env.SMTP_USER && process.env.SMTP_USER.includes("@gmail.com")) {
+      return `"VIA Clothing" <${process.env.SMTP_USER}>`;
+    }
+    return `"VIA Clothing" <${process.env.EMAIL_FROM || "orders@viaclothing.in"}>`;
   }
 
   async sendMail({ to, subject, html, text }) {
-    if (!this.transporter) {
+    const transporter = this.getTransporter();
+
+    if (!transporter) {
       console.log(`[Email Service (Dev Log)] To: ${to} | Subject: ${subject}`);
       return { success: true, mocked: true };
     }
 
     try {
-      const info = await this.transporter.sendMail({
-        from: `"VIA Clothing" <${this.fromEmail}>`,
+      console.log(`[Email Service] Sending email to ${to}...`);
+      const info = await transporter.sendMail({
+        from: this.getFromAddress(),
         to,
         subject,
         text,
         html,
       });
+      console.log(`[Email Service] ✅ Email delivered to ${to} (MessageId: ${info.messageId})`);
       return { success: true, messageId: info.messageId };
     } catch (err) {
-      console.error(`[Email Service] Failed to send email to ${to}:`, err.message);
+      console.error(`[Email Service] ❌ Failed to send email to ${to}:`, err.message);
       return { success: false, error: err.message };
     }
   }
