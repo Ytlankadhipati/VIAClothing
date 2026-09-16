@@ -134,6 +134,10 @@ class EmailService {
   }
 
   async sendOtpEmail(user, otp) {
+    console.log(`\n==============================================`);
+    console.log(`🔑 [VIA EMAIL OTP] Code: ${otp} for ${user.email}`);
+    console.log(`==============================================\n`);
+
     const subject = `${otp} is your VIA Account Verification Code`;
     const html = `
       <div style="background-color: #09090b; color: #ffffff; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
