@@ -32,6 +32,7 @@ import { useToast } from "../../context/ToastContext";
 import { orderService } from "../../services/orderService";
 import { authService } from "../../services/authService";
 import { fetchCityStateFromPincode } from "../../utils/pincodeHelper";
+import OtpVerificationModal from "../../components/OtpVerificationModal";
 
 export default function Account() {
   const { user, isAuthenticated, logout, updateProfile, addAddress, deleteAddress } = useAuth();
@@ -115,6 +116,8 @@ export default function Account() {
 
   // Deactivate Modal
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  // Email OTP Modal
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -692,9 +695,24 @@ export default function Account() {
                     <h3 className="font-heading font-black text-sm uppercase tracking-wider text-zinc-900">
                       Email Address
                     </h3>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200">
-                      <CheckCircle2 className="w-3 h-3" /> Verified
-                    </span>
+                    {user?.emailVerified ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200">
+                        <CheckCircle2 className="w-3 h-3" /> Verified
+                      </span>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 border border-amber-200">
+                          <AlertTriangle className="w-3 h-3" /> Unverified
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowOtpModal(true)}
+                          className="text-xs font-black text-black underline uppercase tracking-wider hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          Verify Now
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
@@ -718,9 +736,15 @@ export default function Account() {
                     <h3 className="font-heading font-black text-sm uppercase tracking-wider text-zinc-900">
                       Mobile Number
                     </h3>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200">
-                      <CheckCircle2 className="w-3 h-3" /> Verified
-                    </span>
+                    {user?.phone ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200">
+                        <CheckCircle2 className="w-3 h-3" /> Added
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-zinc-500 bg-zinc-50 px-2 py-0.5 border border-zinc-200">
+                        Not Added
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3">
@@ -1452,6 +1476,13 @@ export default function Account() {
           </div>
         </div>
       )}
+
+      {/* OTP Verification Modal */}
+      <OtpVerificationModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onVerified={() => setShowOtpModal(false)}
+      />
     </div>
   );
 }
