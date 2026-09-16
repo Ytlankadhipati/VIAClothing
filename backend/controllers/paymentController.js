@@ -34,6 +34,13 @@ export const createRazorpayOrder = async (req, res, next) => {
       return errorResponse(res, 400, "Your order must contain at least one item.");
     }
 
+    // Option A: Do not block checkout for unverified emails to prevent lost revenue, but log warning
+    if (req.user && req.user.emailVerified === false) {
+      console.warn(
+        `[Payment/Order] Notice: Order initiated by user with unverified email: ${req.user.email} (User ID: ${req.user._id})`
+      );
+    }
+
     // Recalculate subtotal server-side
     let calculatedSubtotal = 0;
     for (const item of items) {

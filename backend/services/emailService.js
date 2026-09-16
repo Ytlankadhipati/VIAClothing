@@ -132,6 +132,32 @@ class EmailService {
     `;
     return this.sendMail({ to: user.email, subject, html });
   }
+
+  async sendOtpEmail(user, otp) {
+    const subject = `${otp} is your VIA Account Verification Code`;
+    const html = `
+      <div style="background-color: #09090b; color: #ffffff; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #121215; border: 1px solid #27272a; padding: 32px; text-align: center;">
+          <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 4px;">VIA</h1>
+          <p style="color: #a1a1aa; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: 0;">Email Verification</p>
+          <hr style="border: 0; border-top: 1px solid #27272a; margin: 20px 0;" />
+          <h2 style="color: #ffffff; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Verify Your Email Address</h2>
+          <p style="color: #d4d4d8; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">Hello ${user.name || "Customer"}, use the verification code below to verify your email address. This code is valid for 10 minutes.</p>
+          <div style="background-color: #18181b; border: 1px solid #3f3f46; border-radius: 4px; padding: 20px; margin: 24px auto; display: inline-block;">
+            <span style="color: #ffffff; font-size: 32px; font-weight: 900; letter-spacing: 8px; font-family: monospace;">${otp}</span>
+          </div>
+          <p style="color: #71717a; font-size: 12px; margin-top: 24px;">If you did not attempt to sign up for VIA Clothing, you can safely ignore this email.</p>
+          <p style="color: #71717a; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-top: 30px;">Define Your Own. Never Conform.</p>
+        </div>
+      </div>
+    `;
+    return this.sendMail({
+      to: user.email,
+      subject,
+      html,
+      text: `Your VIA verification code is ${otp}. It expires in 10 minutes.`,
+    });
+  }
 }
 
 export default new EmailService();

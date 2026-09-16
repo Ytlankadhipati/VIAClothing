@@ -11,9 +11,12 @@ import {
   resetPassword,
   addAddress,
   deleteAddress,
+  googleAuth,
+  verifyEmailOtp,
+  resendEmailOtp,
 } from "../controllers/authController.js";
 import { protect } from "../middleware/auth.js";
-import { authLimiter } from "../middleware/rateLimiter.js";
+import { authLimiter, otpLimiter } from "../middleware/rateLimiter.js";
 import { validate } from "../middleware/validate.js";
 
 const router = express.Router();
@@ -52,6 +55,11 @@ router.put("/profile", protect, updateProfile);
 router.put("/change-password", protect, changePassword);
 router.post("/forgot-password", authLimiter, forgotPassword);
 router.post("/reset-password/:token", authLimiter, resetPassword);
+
+// Google Sign-In & OTP Verification
+router.post("/google", authLimiter, googleAuth);
+router.post("/verify-otp", protect, authLimiter, verifyEmailOtp);
+router.post("/resend-otp", protect, otpLimiter, resendEmailOtp);
 
 // Addresses
 router.post("/addresses", protect, addAddress);

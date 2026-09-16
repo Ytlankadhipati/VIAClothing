@@ -27,3 +27,16 @@ export const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// OTP Limiter — strict limit for requesting/resending email OTPs
+export const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 OTP requests per 15-minute window
+  message: {
+    success: false,
+    message: "Too many verification code requests. Please wait a few minutes before trying again.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+

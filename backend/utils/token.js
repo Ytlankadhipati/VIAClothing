@@ -24,6 +24,8 @@ export const sendTokenResponse = (user, statusCode, res, message = "Authenticate
     phone: user.phone || "",
     role: user.role,
     avatar: user.avatar || "",
+    emailVerified: !!user.emailVerified,
+    authProvider: user.authProvider || "local",
     addresses: user.addresses || [],
     wishlist: user.wishlist || [],
   };

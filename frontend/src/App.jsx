@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import WhatsAppFloatingButton from "./components/WhatsAppFloatingButton";
+import EmailVerificationBanner from "./components/EmailVerificationBanner";
 import CartDrawer from "./components/CartDrawer";
 import AdminLayout from "./components/AdminLayout";
 
@@ -61,6 +62,7 @@ function MainLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-[#fafafa] text-[#09090b] selection:bg-black selection:text-white">
       {!isAdminRoute && <Navbar />}
+      {!isAdminRoute && <EmailVerificationBanner />}
       <main className="flex-1">
         <Routes>
           {/* Storefront Routes */}

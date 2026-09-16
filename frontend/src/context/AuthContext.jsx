@@ -51,6 +51,18 @@ export function AuthProvider({ children }) {
     throw new Error(res.message || "Failed to register");
   };
 
+  const googleLogin = async (idToken) => {
+    const res = await authService.googleAuth(idToken);
+    if (res.success) {
+      if (res.token) {
+        localStorage.setItem("via_token", res.token);
+      }
+      setUser(res.data.user);
+      return res.data.user;
+    }
+    throw new Error(res.message || "Google Sign-In failed");
+  };
+
   const logout = async () => {
     try {
       await authService.logout();
@@ -68,6 +80,21 @@ export function AuthProvider({ children }) {
       setUser(res.data.user);
       return res.data.user;
     }
+  };
+
+  const verifyOtp = async (otp) => {
+    const res = await authService.verifyEmailOtp(otp);
+    if (res.success) {
+      setUser((prev) => ({ ...prev, emailVerified: true }));
+      return res;
+    }
+    throw new Error(res.message || "OTP verification failed");
+  };
+
+  const resendOtp = async () => {
+    const res = await authService.resendEmailOtp();
+    if (res.success) return res;
+    throw new Error(res.message || "Failed to resend OTP");
   };
 
   const addAddress = async (addressData) => {
@@ -91,8 +118,11 @@ export function AuthProvider({ children }) {
     isAdmin: user?.role === "admin",
     login,
     register,
+    googleLogin,
     logout,
     updateProfile,
+    verifyOtp,
+    resendOtp,
     addAddress,
     deleteAddress,
     refreshUser: fetchCurrentUser,
@@ -102,3 +132,4 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+

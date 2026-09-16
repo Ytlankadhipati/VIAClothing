@@ -9,6 +9,10 @@ export const authService = {
   changePassword: (data) => api.put("/auth/change-password", data),
   forgotPassword: (email) => api.post("/auth/forgot-password", { email }),
   resetPassword: (token, password) => api.post(`/auth/reset-password/${token}`, { password }),
+  googleAuth: (idToken) => api.post("/auth/google", { idToken }),
+  verifyEmailOtp: (otp) => api.post("/auth/verify-otp", { otp }),
+  resendEmailOtp: () => api.post("/auth/resend-otp"),
   addAddress: (addressData) => api.post("/auth/addresses", addressData),
   deleteAddress: (id) => api.delete(`/auth/addresses/${id}`),
 };
+
