@@ -5,6 +5,14 @@ import QuickViewModal from "./QuickViewModal";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 
+const optimizeImageUrl = (url, width = 800) => {
+  if (!url || typeof url !== "string") return url || "/assets/via-logo.png";
+  if (url.includes("res.cloudinary.com") && !url.includes("/f_auto")) {
+    return url.replace("/image/upload/", `/image/upload/f_auto,q_auto,w_${width},c_limit/`);
+  }
+  return url;
+};
+
 export default function ProductCard({ product }) {
   const [isHovered, setIsHovered] = useState(false);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
@@ -14,8 +22,11 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
 
-  const mainImage = product.images?.[0] || "/assets/via-logo.png";
-  const hoverImage = product.images?.[1] || mainImage;
+  const rawMainImage = product.images?.[0] || "/assets/via-logo.png";
+  const rawHoverImage = product.images?.[1] || rawMainImage;
+  const mainImage = optimizeImageUrl(rawMainImage, 800);
+  const hoverImage = optimizeImageUrl(rawHoverImage, 800);
+  const hasMultipleImages = Boolean(product.images && product.images.length > 1);
   const wishlisted = isWishlisted(product._id || product.id);
 
   const discountBadge =
@@ -61,13 +72,25 @@ export default function ProductCard({ product }) {
       >
         {/* Product Image Area */}
         <div className="relative aspect-3/4 overflow-hidden bg-zinc-100">
-          <Link to={`/product/${product.slug || product.id || product._id}`} className="block w-full h-full">
+          <Link to={`/product/${product.slug || product.id || product._id}`} className="block w-full h-full relative">
             <img
-              src={isHovered ? hoverImage : mainImage}
+              src={mainImage}
               alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
+                hasMultipleImages && isHovered ? "opacity-0" : "opacity-100"
+              }`}
               loading="lazy"
             />
+            {hasMultipleImages && (
+              <img
+                src={hoverImage}
+                alt={`${product.name} alternate view`}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
+                  isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+                loading="lazy"
+              />
+            )}
           </Link>
 
           {/* Badges (Discount / New Drop / GSM) */}

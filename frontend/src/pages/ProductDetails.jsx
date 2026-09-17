@@ -22,6 +22,14 @@ import SizeGuideModal from "../components/SizeGuideModal";
 import ProductGrid from "../components/ProductGrid";
 import { getProductOrderWhatsAppUrl } from "../utils/whatsapp";
 
+const optimizeImageUrl = (url, width = 1200) => {
+  if (!url || typeof url !== "string") return url || "/assets/via-logo.png";
+  if (url.includes("res.cloudinary.com") && !url.includes("/f_auto")) {
+    return url.replace("/image/upload/", `/image/upload/f_auto,q_auto,w_${width},c_limit/`);
+  }
+  return url;
+};
+
 export default function ProductDetails() {
   const { id } = useParams();
   const { addToast } = useToast();
@@ -230,9 +238,10 @@ export default function ProductDetails() {
                       }`}
                   >
                     <img
-                      src={img}
+                      src={optimizeImageUrl(img, 200)}
                       alt={`${product.name} angle ${idx + 1}`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </button>
                 ))}
@@ -242,7 +251,7 @@ export default function ProductDetails() {
             {/* Featured Image */}
             <div className="flex-1 relative aspect-3/4 bg-zinc-100 border border-zinc-200 shadow-sm overflow-hidden group">
               <img
-                src={product.images?.[selectedImageIndex] || product.images?.[0]}
+                src={optimizeImageUrl(product.images?.[selectedImageIndex] || product.images?.[0], 1200)}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />

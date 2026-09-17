@@ -193,16 +193,20 @@ export default function AdminProducts() {
 
     try {
       setUploadingImage(true);
-      const uploadedUrls = [];
-      for (const file of files) {
+      const uploadPromises = files.map(async (file) => {
         const optimizedFile = await compressImageFile(file);
         const data = new FormData();
         data.append("image", optimizedFile);
         const res = await adminService.uploadImage(data);
         if (res.success && res.data.url) {
-          uploadedUrls.push(res.data.url);
+          return res.data.url;
         }
-      }
+        return null;
+      });
+
+      const results = await Promise.all(uploadPromises);
+      const uploadedUrls = results.filter(Boolean);
+
       if (uploadedUrls.length > 0) {
         setFormData((prev) => ({
           ...prev,
