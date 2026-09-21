@@ -11,7 +11,7 @@ export default function MarqueeBanner() {
   ];
 
   return (
-    <div className="bg-black text-white py-2.5 overflow-hidden border-b border-zinc-900 select-none shadow-xs">
+    <div className="w-full max-w-full bg-black text-white py-2.5 overflow-hidden border-b border-zinc-900 select-none shadow-xs">
       <div className="flex whitespace-nowrap animate-marquee">
         <div className="flex items-center gap-8 text-[11px] font-bold tracking-[0.25em] uppercase px-4 shrink-0">
           {marqueeItems.map((item, idx) => (

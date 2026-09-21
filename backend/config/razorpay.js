@@ -22,7 +22,7 @@ export const getRazorpayInstance = () => {
 
 export const verifyRazorpaySignature = (orderId, paymentId, signature) => {
   const secret = process.env.RAZORPAY_KEY_SECRET || "rzp_secret_via_demo_key";
-  
+
   // Allow simulated sandbox signatures when test/demo signature is sent or placeholder secret is in use
   if (
     (typeof signature === "string" && signature.startsWith("demo_sig_")) ||

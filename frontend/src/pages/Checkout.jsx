@@ -706,11 +706,10 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={() => setSandboxMethod("upi")}
-                    className={`p-3 border text-center transition-all flex flex-col items-center gap-1.5 ${
-                      sandboxMethod === "upi"
+                    className={`p-3 border text-center transition-all flex flex-col items-center gap-1.5 ${sandboxMethod === "upi"
                         ? "border-black bg-zinc-950 text-white font-bold"
                         : "border-zinc-200 hover:border-zinc-400 bg-white text-zinc-800"
-                    }`}
+                      }`}
                   >
                     <Smartphone className="w-4 h-4" />
                     <span className="text-[10px] uppercase font-bold">UPI / QR</span>
@@ -719,11 +718,10 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={() => setSandboxMethod("card")}
-                    className={`p-3 border text-center transition-all flex flex-col items-center gap-1.5 ${
-                      sandboxMethod === "card"
+                    className={`p-3 border text-center transition-all flex flex-col items-center gap-1.5 ${sandboxMethod === "card"
                         ? "border-black bg-zinc-950 text-white font-bold"
                         : "border-zinc-200 hover:border-zinc-400 bg-white text-zinc-800"
-                    }`}
+                      }`}
                   >
                     <CreditCard className="w-4 h-4" />
                     <span className="text-[10px] uppercase font-bold">Card</span>
@@ -732,11 +730,10 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={() => setSandboxMethod("netbanking")}
-                    className={`p-3 border text-center transition-all flex flex-col items-center gap-1.5 ${
-                      sandboxMethod === "netbanking"
+                    className={`p-3 border text-center transition-all flex flex-col items-center gap-1.5 ${sandboxMethod === "netbanking"
                         ? "border-black bg-zinc-950 text-white font-bold"
                         : "border-zinc-200 hover:border-zinc-400 bg-white text-zinc-800"
-                    }`}
+                      }`}
                   >
                     <Building2 className="w-4 h-4" />
                     <span className="text-[10px] uppercase font-bold">NetBanking</span>

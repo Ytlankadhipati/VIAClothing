@@ -6,7 +6,7 @@ export default function WhatsAppFloatingButton() {
   const [showTooltip, setShowTooltip] = useState(true);
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-3">
       {/* Tooltip badge */}
       {showTooltip && (
         <div className="hidden sm:flex items-center gap-2 bg-white/95 border border-zinc-200 px-3.5 py-2 shadow-lg backdrop-blur-md animate-fadeIn">

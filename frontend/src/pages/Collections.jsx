@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Layers, Sparkles } from "lucide-react";
+import { ArrowRight, Layers } from "lucide-react";
 import { COLLECTIONS_DATA } from "../data/collections";
-import { PRODUCTS } from "../data/products";
+import { productService } from "../services/productService";
 
 export default function Collections() {
+  const [allProducts, setAllProducts] = useState([]);
+
+  useEffect(() => {
+    productService
+      .getProducts({ limit: 50 })
+      .then((res) => {
+        if (res.success && res.data.products) {
+          setAllProducts(res.data.products);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#fafafa] py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,8 +40,10 @@ export default function Collections() {
         {/* Collections Stack / Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {COLLECTIONS_DATA.map((col, idx) => {
-            const matchingProducts = PRODUCTS.filter(
-              (p) => p.collection.toLowerCase() === col.name.toLowerCase()
+            // Match products to this collection from live API data
+            const matchingProducts = allProducts.filter(
+              (p) =>
+                p.collection?.toLowerCase() === col.name.toLowerCase()
             );
 
             return (
@@ -36,12 +51,12 @@ export default function Collections() {
                 key={col.id}
                 className="group relative bg-white border border-zinc-200 shadow-sm hover:shadow-md overflow-hidden flex flex-col justify-between transition-all"
               >
-                {/* Visual Banner */}
-                <div className="relative aspect-16/10 sm:aspect-21/9 overflow-hidden bg-zinc-100">
+                {/* Visual Banner — real VIA product image */}
+                <div className="relative aspect-video sm:aspect-[21/9] overflow-hidden bg-zinc-100">
                   <img
                     src={col.image}
                     alt={col.name}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter brightness-75 group-hover:brightness-65"
+                    className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 filter brightness-75 group-hover:brightness-65"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
@@ -60,7 +75,9 @@ export default function Collections() {
                         {col.name}
                       </h2>
                       <span className="text-xs font-bold uppercase tracking-widest text-zinc-500">
-                        {col.itemCount}
+                        {matchingProducts.length > 0
+                          ? `${matchingProducts.length} Item${matchingProducts.length !== 1 ? "s" : ""}`
+                          : col.itemCount}
                       </span>
                     </div>
 
@@ -72,24 +89,26 @@ export default function Collections() {
                       {col.description}
                     </p>
 
-                    {/* Preview product mini chips */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {matchingProducts.slice(0, 3).map((p) => (
-                        <span
-                          key={p.id}
-                          className="text-[10px] uppercase font-bold text-zinc-700 bg-zinc-100 px-2.5 py-1 border border-zinc-200"
-                        >
-                          {p.name}
-                        </span>
-                      ))}
-                    </div>
+                    {/* Preview product name chips — from real live data */}
+                    {matchingProducts.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {matchingProducts.slice(0, 3).map((p) => (
+                          <span
+                            key={p._id}
+                            className="text-[10px] uppercase font-bold text-zinc-700 bg-zinc-100 px-2.5 py-1 border border-zinc-200"
+                          >
+                            {p.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <Link
                     to={col.link}
                     className="w-full py-3.5 bg-black hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-2 shadow-sm"
                   >
-                    Explore {col.name} Collection
+                    Explore {col.name}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>

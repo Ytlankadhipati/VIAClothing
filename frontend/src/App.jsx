@@ -60,7 +60,7 @@ function MainLayout() {
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fafafa] text-[#09090b] selection:bg-black selection:text-white">
+    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-[#fafafa] text-[#09090b] selection:bg-black selection:text-white">
       {!isAdminRoute && <Navbar />}
       {!isAdminRoute && <EmailVerificationBanner />}
       <main className="flex-1">

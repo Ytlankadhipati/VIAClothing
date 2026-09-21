@@ -61,7 +61,7 @@ export default function ProductCard({ product }) {
   return (
     <>
       <div
-        className="group relative flex flex-col bg-white border border-zinc-200 hover:border-zinc-900 shadow-xs hover:shadow-xl transition-all duration-300 transform-gpu"
+        className="group relative flex flex-col min-w-0 bg-white border border-zinc-200 hover:border-zinc-900 shadow-xs hover:shadow-xl transition-all duration-300 transform-gpu"
         style={{
           transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
           transition: isHovered ? "transform 0.1s ease-out" : "transform 0.5s ease-out",
@@ -158,7 +158,7 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Product Information */}
-        <div className="p-4 flex flex-col justify-between flex-1">
+        <div className="p-3 sm:p-4 flex flex-col justify-between flex-1 min-w-0">
           <div>
             <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">
               <span>{product.category}</span>
@@ -181,8 +181,8 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          <div className="mt-3 pt-3 border-t border-zinc-100 flex items-center justify-between">
-            <div className="flex items-baseline gap-2">
+          <div className="mt-3 pt-3 border-t border-zinc-100 flex items-center justify-between gap-1">
+            <div className="flex items-baseline gap-1.5 flex-wrap min-w-0">
               <span className="text-sm font-black text-zinc-900">
                 ₹{product.price?.toLocaleString("en-IN")}
               </span>

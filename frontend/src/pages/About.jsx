@@ -49,9 +49,9 @@ export default function About() {
 
           <div className="lg:col-span-6 relative aspect-4/3 bg-zinc-100 border border-zinc-200 shadow-sm overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=85"
+              src="/assets/via-tee-real.jpg"
               alt="VIA Studio Process"
-              className="w-full h-full object-cover filter contrast-105"
+              className="w-full h-full object-cover object-center filter contrast-105"
             />
           </div>
         </div>
@@ -104,9 +104,9 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-20">
           <div className="lg:col-span-6 order-2 lg:order-1 relative aspect-4/3 bg-zinc-100 border border-zinc-200 shadow-sm overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=1200&q=85"
-              alt="VIA Heavy French Terry"
-              className="w-full h-full object-cover filter contrast-105"
+              src="/assets/via-hoodie-real.jpg"
+              alt="VIA Heavy French Terry Hoodie"
+              className="w-full h-full object-cover object-center filter contrast-105"
             />
           </div>
 

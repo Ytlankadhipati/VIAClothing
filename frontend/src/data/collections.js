@@ -1,46 +1,38 @@
 /**
  * VIA Collections Data
+ * Uses real VIA product images as collection banners.
+ * Update itemCount when adding new products.
  */
 
 export const COLLECTIONS_DATA = [
   {
-    id: "essentials",
-    name: "ESSENTIALS",
-    tagline: "The Core Foundation of Modern Streetwear",
+    id: "signature-series",
+    name: "Signature Series",
+    tagline: "The Core VIA Identity",
     description:
-      "Minimalist silhouettes, uncompromised 240+ GSM cotton, and permanent wardrobe anchors designed to be worn on repeat.",
-    itemCount: "4 Items",
-    image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=85",
-    link: "/shop?collection=Essentials",
+      "Bold VIA wordmark and iconic eagle crest pieces built on 240 GSM super combed cotton. The permanent wardrobe anchors of the VIA catalog.",
+    itemCount: "2 Items",
+    image: "/assets/via-tee-real.jpg",
+    link: "/shop?collection=Signature+Series",
   },
   {
-    id: "oversized",
-    name: "OVERSIZED",
-    tagline: "Architectural Volume & Boxy Drape",
+    id: "capsule-aw26",
+    name: "Capsule AW26",
+    tagline: "Autumn / Winter 2026 Limited Drop",
     description:
-      "Engineered drop-shoulders and widened sleeves for an authentic relaxed fit that never clings.",
-    itemCount: "3 Items",
-    image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=1200&q=85",
-    link: "/shop?collection=Oversized",
+      "Angel wings, racing graphics, and archival heavyweight silhouettes — the complete AW26 seasonal capsule. Limited batch, no restock.",
+    itemCount: "2 Items",
+    image: "/assets/hero-tshirt-1.jpg",
+    link: "/shop?collection=Capsule+AW26",
   },
   {
-    id: "street",
-    name: "STREET",
-    tagline: "Raw Grit, Acid Washes & Utilitarian Cuts",
+    id: "accessories",
+    name: "Accessories",
+    tagline: "Complete The Aesthetic",
     description:
-      "Acid-washed garments, vintage fades, and multi-pocket modular cargo pants made for urban streets.",
+      "VIA-branded lifestyle accessories — laser-engraved flasks, ceramic mugs, and washed caps to carry the identity beyond the wardrobe.",
     itemCount: "3 Items",
-    image: "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=1200&q=85",
-    link: "/shop?collection=Street",
-  },
-  {
-    id: "new-drop",
-    name: "NEW DROP",
-    tagline: "Latest Seasonal Heavyweight Pieces",
-    description:
-      "Freshly released 420 GSM French Terry zip hoodies and archival graphic tees.",
-    itemCount: "3 Items",
-    image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=85",
-    link: "/shop?collection=New Drop",
+    image: "/assets/via-cap-real.jpg",
+    link: "/shop?collection=Accessories",
   },
 ];

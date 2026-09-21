@@ -846,7 +846,7 @@ export const seedDatabase = async () => {
 
     const adminUser = await User.create({
       name: "Vivek Awasthi",
-      email: "admin@viaclothing.in",
+      email: "Vivekvinayawasthi0000@gmail.com",
 
       password: adminPassword,
       phone: "917007470175",
